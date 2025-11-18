@@ -110,21 +110,23 @@ async def _archive_async(limit):
 
 
 class UsersAnalyticsAPIView(APIView):
-    async def get(self, request):
+    def get(self, request):
         logger.info(f"Live analytics request - limit={parse_limit(request)}")
         limit = parse_limit(request)
 
         # Run the async function safely
-        payload = await compute_users_analytics_async(limit)
+        # payload = await compute_users_analytics_async(limit)
+        payload = asyncio.run(compute_users_analytics_async(limit))
 
         return Response(payload, status=status.HTTP_200_OK)
 
 
 
 class ArchiveCreateAPIView(APIView):
-    async def post(self, request):
+    def post(self, request):
         limit = parse_limit(request)
-        data = await _archive_async(limit)
+        #data = await _archive_async(limit)
+        data = asyncio.run(_archive_async(limit))
 
         payload = AnalyticsPayloadBuilder.build(data, limit)
 
